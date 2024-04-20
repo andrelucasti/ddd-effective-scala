@@ -1,6 +1,6 @@
 package io.andrelucas
 package common.domain
 
-trait Entity():
+trait Entity:
   def toJSON: Any
 

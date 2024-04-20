@@ -1,14 +1,14 @@
 package io.andrelucas
 package event.domain.entities
 
-import common.domain.valueobjects.Email
-import common.domain.{AggregateRoot, ValueObject}
+import common.domain.AggregateRoot
+import common.domain.valueobjects.{BrazilNationalId, Email, Name, NationalId, Nationality}
 
 import java.time.LocalDate
 import java.util.UUID
 
 case class Customer(id: UUID,
-                    nationalId: String,
+                    nationalId: NationalId,
                     private var pName: Name,
                     private var pEmail: Email,
                     birthDate: LocalDate) extends AggregateRoot:
@@ -23,10 +23,15 @@ case class Customer(id: UUID,
 
 object Customer:
   def create(nationalId: String,
+             nationality: Nationality,
              name: String,
              email: String,
              birthDate: LocalDate): Customer =
-    Customer(UUID.randomUUID(), nationalId, Name(name), Email(email), birthDate)
 
-// Value Objects
-class Name(private val name: String) extends ValueObject[String](name)
+    Customer(UUID.randomUUID(), nationalitiesFactory(nationality, nationalId), Name(name), Email(email), birthDate)
+
+  private val nationalitiesFactory: (Nationality, String) => NationalId = (n: Nationality, value: String) =>
+    n match
+      case Nationality.BR => BrazilNationalId(value)
+      case _ => throw new IllegalArgumentException()
+
