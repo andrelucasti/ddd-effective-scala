@@ -14,17 +14,22 @@ case class EventSection(id: UUID,
                         description: String,
                         totalSpots: Long,
                         totalSpotsReserved: Long,
-                        spots: mutable.Set[EventSpot]
+                        spots: mutable.Set[EventSpot],
+                        private var pIsPublished: Boolean,
                        ) extends Entity:
-
+  
+  def isPublished: Boolean = this.pIsPublished
+  
   @tailrec
   final def initSpotRecursive(spotQuantity: Long, location: String): Unit =
     if spotQuantity > 0 then
       val spot = EventSpot(UUID.randomUUID(), location + spotQuantity, false, false)
       this.spots += spot
       initSpotRecursive(spotQuantity = spotQuantity - 1, location)
-
-
+  
+  def publish():Unit = this.pIsPublished = true
+  def unpublish(): Unit = this.pIsPublished = false
+  
   override def toJSON: Any = ""
 
 object EventSection:
@@ -35,6 +40,6 @@ object EventSection:
              totalSpots: Long,
              totalSpotsReserved: Long): EventSection =
 
-    EventSection(UUID.randomUUID(), name, priceInCents, description, totalSpots, totalSpotsReserved, mutable.Set.empty)
+    EventSection(UUID.randomUUID(), name, priceInCents, description, totalSpots, totalSpotsReserved, mutable.Set.empty, false)
 
 

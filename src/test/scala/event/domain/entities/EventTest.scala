@@ -7,14 +7,15 @@ import scala.collection.mutable
 
 class EventTest extends UnitSpec {
 
-  it should "create a event" in {
+  it should "create an event" in {
     val date = LocalDateTime.of(2024, 2, 2, 12, 0, 0)
     val partnerId = UUID.randomUUID()
     val sections = List.empty
     val eventName = Event.create("EventName", "eventDescription", date, partnerId)
 
     val eventExpected = Event(eventName.id, "EventName", "eventDescription", date, 0, 0, false, partnerId, mutable.Set.empty)
-    assert(eventName == eventExpected)
+
+    eventName should be (eventExpected)
   }
 
   it should "sum total spots when a section is created" in {
@@ -25,7 +26,7 @@ class EventTest extends UnitSpec {
 
   }
 
-  it should "create a event section" in {
+  it should "create an event section" in {
     val date = LocalDateTime.of(2024, 2, 2, 12, 0, 0)
     val partnerId = UUID.randomUUID()
     val sections = List.empty
@@ -51,6 +52,84 @@ class EventTest extends UnitSpec {
     vipSection.priceInCents should be (1500)
     eventName.totalSpots should be (100)
     eventName.totalSpotsReserved should be (0)
-    
+  }
+
+  it should "publish a section when an event is published" in {
+    val date = LocalDateTime.of(2024, 11, 9, 20, 0, 0)
+    val partnerId = UUID.randomUUID()
+
+    val event = Event.create("KnotFest", "Knot Fest in Lisbon", date, partnerId)
+    event.addSection("Meet & Greet + VIP", "Meet & Greet + VIP", 10, 0, 20000)
+    event.isPublished should be (false)
+    event.sections.head.isPublished should be (false)
+
+    event.publish()
+    event.isPublished should be (true)
+    event.sections.head.isPublished should be(true)
+  }
+
+  it should "unpublish a section when an event is unpublished" in {
+    val date = LocalDateTime.of(2024, 11, 9, 20, 0, 0)
+    val partnerId = UUID.randomUUID()
+
+    val event = Event.create("KnotFest", "Knot Fest in Lisbon", date, partnerId)
+    event.addSection("Meet & Greet + VIP", "Meet & Greet + VIP", 10, 0, 20000)
+    event.isPublished should be(false)
+    event.sections.head.isPublished should be(false)
+
+    event.publish()
+    event.isPublished should be(true)
+    event.sections.head.isPublished should be(true)
+
+    event.unpublish()
+    event.isPublished should be(false)
+    event.sections.head.isPublished should be(false)
+
+  }
+
+  it should "publish all section when an event is published" in {
+    val date = LocalDateTime.of(2024, 11, 9, 20, 0, 0)
+    val partnerId = UUID.randomUUID()
+
+    val event = Event.create("KnotFest", "Knot Fest in Lisbon", date, partnerId)
+    event.addSection("General Adm", "General Admission", 10, 0, 8000)
+    event.addSection("Meet & Greet + VIP", "Meet & Greet + VIP", 10, 0, 20000)
+
+    event.isPublished should be(false)
+    forAll(event.sections.map(_.isPublished)) {
+      p => p should be (false)
+    }
+
+    event.publish()
+    event.isPublished should be(true)
+    forAll(event.sections.map(_.isPublished)) {
+      p => p should be(true)
+    }
+  }
+
+  it should "unpublish all section when an event is unpublished" in {
+    val date = LocalDateTime.of(2024, 11, 9, 20, 0, 0)
+    val partnerId = UUID.randomUUID()
+
+    val event = Event.create("KnotFest", "Knot Fest in Lisbon", date, partnerId)
+    event.addSection("General Adm", "General Admission", 10, 0, 8000)
+    event.addSection("Meet & Greet + VIP", "Meet & Greet + VIP", 10, 0, 20000)
+
+    event.isPublished should be(false)
+    forAll(event.sections.map(_.isPublished)) {
+      p => p should be(false)
+    }
+
+    event.publish()
+    event.isPublished should be(true)
+    forAll(event.sections.map(_.isPublished)) {
+      p => p should be(true)
+    }
+
+    event.unpublish()
+    event.isPublished should be(false)
+    forAll(event.sections.map(_.isPublished)) {
+      p => p should be(false)
+    }
   }
 }

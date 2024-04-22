@@ -13,6 +13,6 @@ case class Partner(id: UUID,
   def createEvent(name: String, description: String, date: LocalDateTime): Event =
     Event.create(name, description, date, this.id)
   
-  def name = this.pName.value
+  def name: String = this.pName.value
   
   override def toJSON: Any = ""
