@@ -84,7 +84,6 @@ class EventTest extends UnitSpec {
     event.unpublish()
     event.isPublished should be(false)
     event.sections.head.isPublished should be(false)
-
   }
 
   it should "publish all section when an event is published" in {
