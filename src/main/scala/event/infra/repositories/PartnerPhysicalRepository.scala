@@ -10,9 +10,11 @@ import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api.*
 import slick.lifted.TableQuery
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.UUID
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future, TimeoutException}
 import scala.concurrent.duration.*
+import scala.util.Failure
 
 case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
   private val partnerTable = TableQuery[PartnerTable]
@@ -27,14 +29,19 @@ case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
       .result
       .headOption
 
-    val result = Await.result(db.run(action), 2.second)
+    val resultFuture: Future[Option[PartnerEntity]] = db.run(action)
 
-    result.map(p => Partner(p.id, Name(p.name)))
+    Await.result(resultFuture.map {
+      case Some(p) => Some(Partner(p.id, Name(p.name)))
+      case None => None
+    }.recoverWith{
+      case _: java.util.concurrent.TimeoutException => Future.successful(None)
+    }, 1.second)
 
   override def findAll(): List[Partner] =
     val action = partnerTable.result
     val result = Await.result(db.run(action), 2.second)
-    
+
     result.map(p => Partner(p.id, Name(p.name))).toList
 
   override def delete(id: UUID): Unit = ???
