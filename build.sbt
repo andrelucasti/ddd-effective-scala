@@ -14,6 +14,7 @@ lazy val pgVersion = "42.7.3"
 
 libraryDependencies += "org.scalactic" %% "scalactic" % scalaTicVersion
 libraryDependencies += "org.scalatest" %% "scalatest" % scalaTicVersion % "test"
+libraryDependencies += "org.scalamock" %% "scalamock" % "6.0.0" % "test"
 
 libraryDependencies += "com.typesafe.slick" %% "slick" % slickVersion
 libraryDependencies +=  "com.typesafe.slick" %% "slick-hikaricp" % slickVersion

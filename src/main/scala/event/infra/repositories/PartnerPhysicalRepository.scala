@@ -10,11 +10,10 @@ import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api.*
 import slick.lifted.TableQuery
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.UUID
-import scala.concurrent.{Await, Future, TimeoutException}
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.*
-import scala.util.Failure
+import scala.concurrent.{Await, Future, TimeoutException}
 
 case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
   private val partnerTable = TableQuery[PartnerTable]
@@ -30,7 +29,6 @@ case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
       .headOption
 
     val resultFuture: Future[Option[PartnerEntity]] = db.run(action)
-
     Await.result(resultFuture.map {
       case Some(p) => Some(Partner(p.id, Name(p.name)))
       case None => None
