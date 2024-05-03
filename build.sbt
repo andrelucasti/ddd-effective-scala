@@ -26,6 +26,7 @@ libraryDependencies += "com.typesafe.slick" %% "slick-testkit" % slickVersion
 
 //Monitoring
 libraryDependencies += "ch.qos.logback"  %  "logback-classic"  % "1.5.6"
+libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M7" % Test
 
 Test / parallelExecution := false
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v", "-s", "-a")

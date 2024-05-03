@@ -48,6 +48,14 @@ case class EventService(private val eventRepository: EventRepository,
   //Registering an onComplete callback on the future ensures that the corresponding closure
   // is invoked after the future is completed, eventually.
   def createSection(eventId: UUID,
-                    input: CreateEventSectionInput): Future[Either[Throwable, Unit]] = ???
+                    input: CreateEventSectionInput): Future[Either[Throwable, Unit]] =
 
-
+    eventRepository.findById(eventId)
+      .map {
+        case Some(event) =>
+          Right {
+            event.addSection(input.name, input.description, input.totalSpots, input.totalSpotsReserved, input.priceInCents)
+            eventRepository.update(event)
+          }
+        case None => Left(DomainException(s"the event $eventId wasn't created yet"))
+      }

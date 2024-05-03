@@ -44,13 +44,13 @@ case class EventPhysicalRepository(db: Database) extends EventRepository:
 
     db.run(action)
     
-  override def findById(id: UUID): Future[Event] =
+  override def findById(id: UUID): Future[Option[Event]] =
     val actionJoin = for {
-      event <- eventTable.filter(_.id === id)
+      eventOptional <- eventTable.filter(_.id === id)
         .result
-        .head
-        .map( e=> EventEntity(e.id, e.name, e.description, e.date, e.totalSpots, e.totalSpotsReserved,
-          e.isPublished, e.partnerId, e.updatedAt))
+        .headOption
+        .map( _.map(e=> EventEntity(e.id, e.name, e.description, e.date, e.totalSpots, e.totalSpotsReserved,
+          e.isPublished, e.partnerId, e.updatedAt)))
 
       sections <- sectionTable
         .filter(_.eventId === id)
@@ -65,12 +65,39 @@ case class EventPhysicalRepository(db: Database) extends EventRepository:
         })
       ).map(_.flatten)
 
-      eventDomain = event.toDomain(sections, spots)
+      eventDomain = eventOptional.map(_.toDomain(sections, spots))
     } yield eventDomain
 
     db.run(actionJoin.transactionally)
 
-  override def findAll(): Future[List[Event]] = ???
+  override def findAll(): Future[List[Event]] =
+    val actionJoin = for {
+      events <- eventTable
+        .result
+        .map(_.map(e => EventEntity(e.id, e.name, e.description, e.date, e.totalSpots, e.totalSpotsReserved,
+          e.isPublished, e.partnerId, e.updatedAt)))
+
+      sections <- DBIO.sequence(
+        events.map(event =>
+          sectionTable.filter(_.eventId === event.id)
+            .result
+            .map(_.map(es => EventSectionEntity(es.id, es.name, es.description, es.priceInCents, es.totalSpots,
+              es.totalSpotsReserved, es.isPublished, event.id, es.updatedAt)))
+        )
+      ).map(_.flatten)
+      
+      spots <- DBIO.sequence(
+        sections.map(section => {
+          spotTable.filter(_.eventSectionId === section.id).result.map(_.map(spot =>
+            EventSpotEntity(spot.id, spot.location, spot.isPublished, spot.isReserved, section.id, spot.updatedAt)))
+        })
+      ).map(_.flatten)
+
+      allEvents = events.map(_.toDomain(sections, spots)).toList
+
+    } yield allEvents
+
+    db.run(actionJoin.transactionally)
 
   override def delete(id: UUID): Unit = ???
 
@@ -102,6 +129,6 @@ case class EventPhysicalRepository(db: Database) extends EventRepository:
     
     } yield allEvents
     
-    db.run(actionJoin)
+    db.run(actionJoin.transactionally)
   
   override def exists(id: UUID): Future[Boolean] = db.run(eventTable.filter(_.id === id).exists.result.transactionally)

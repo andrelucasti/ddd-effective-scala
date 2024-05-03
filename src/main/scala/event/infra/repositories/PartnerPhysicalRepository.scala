@@ -22,11 +22,11 @@ case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
     db.run(insert)
   }
 
-  override def findById(id: UUID): Future[Partner] =
+  override def findById(id: UUID): Future[Option[Partner]] =
     val action = partnerTable.filter(_.id === id)
       .result
-      .head
-      .map(p=> Partner(p.id, Name(p.name)))
+      .headOption
+      .map(_.map(p=> Partner(p.id, Name(p.name))))
 
     db.run(action)
 
