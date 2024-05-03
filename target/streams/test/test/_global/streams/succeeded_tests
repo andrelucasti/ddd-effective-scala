@@ -1,0 +1,7 @@
+#Successful Tests
+#Fri May 03 11:01:26 WEST 2024
+io.andrelucas.common.domain.valueobjects.EmailTest=1714730485783
+io.andrelucas.event.application.PartnerServiceIntegrationTest=1714730486155
+io.andrelucas.event.domain.entities.CustomerSpecTest=1714730485783
+io.andrelucas.event.domain.entities.EventTest=1714730485808
+io.andrelucas.event.domain.entities.PartnerTest=1714730485784

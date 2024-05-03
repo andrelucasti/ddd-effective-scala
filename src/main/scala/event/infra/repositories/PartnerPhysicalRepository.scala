@@ -12,8 +12,7 @@ import slick.lifted.TableQuery
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.*
-import scala.concurrent.{Await, Future, TimeoutException}
+import scala.concurrent.Future
 
 case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
   private val partnerTable = TableQuery[PartnerTable]
@@ -23,28 +22,26 @@ case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
     db.run(insert)
   }
 
-  override def update(entity: Partner): Unit = ???
-
-  override def findById(id: UUID): Option[Partner] =
+  override def findById(id: UUID): Future[Partner] =
     val action = partnerTable.filter(_.id === id)
       .result
-      .headOption
+      .head
+      .map(p=> Partner(p.id, Name(p.name)))
 
-    val resultFuture: Future[Option[PartnerEntity]] = db.run(action)
-    Await.result(resultFuture.map {
-      case Some(p) => Some(Partner(p.id, Name(p.name)))
-      case None => None
-    }.recoverWith{
-      case _: java.util.concurrent.TimeoutException => Future.successful(None)
-    }, 1.second)
+    db.run(action)
 
-  override def findByMandatory(id: UUID): Partner = findById(id).head
+  override def findAll(): Future[List[Partner]] =
+    db.run(partnerTable
+      .result
+      .map(_
+        .map(p => Partner(p.id, Name(p.name))))
+      .map(_.toList))
 
-  override def findAll(): List[Partner] =
-    val action = partnerTable.result
-    val result = Await.result(db.run(action), 2.second)
 
-    result.map(p => Partner(p.id, Name(p.name))).toList
+  override def exists(id: UUID): Future[Boolean] =
+    db.run(partnerTable.filter(_.id === id).exists.result)
+
+  override def update(entity: Partner): Unit = ???
 
   override def delete(id: UUID): Unit = ???
 }

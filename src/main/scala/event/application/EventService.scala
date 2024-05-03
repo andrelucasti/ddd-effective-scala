@@ -1,31 +1,53 @@
 package io.andrelucas
 package event.application
 
-import common.domain.DomainException
+import event.domain.entities.Event
 import event.domain.repository.{EventRepository, PartnerRepository}
 
+import io.andrelucas.common.domain.DomainException
+
 import java.util.UUID
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 case class EventService(private val eventRepository: EventRepository, 
                         private val partnerRepository: PartnerRepository):
   
-  def create(input: CreateEventInput): Either[Throwable, Unit] =
-    partnerRepository.findById(input.partnerId) match
-      case None => Left(DomainException(s"the partner ${input.partnerId} not exist"))
-      case Some(p) => Right {
-        val event = p.createEvent(input.eventName, input.eventDescription, input.date)
-        eventRepository.save(event)
+  def create(partnerId: UUID,
+             input: CreateEventInput): Future[Either[Throwable, Unit]] =
+
+    partnerRepository
+      .exists(partnerId)
+      .map { p=>
+        if !p then Left(DomainException(s"the partner $partnerId not exists yet"))
+        else
+          Right {
+            val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
+            eventRepository.save(event)
+          }
       }
 
-  def createSection(eventId: UUID,
-                    input: CreateEventSectionInput): Either[Throwable, Unit] =
-    if eventRepository.exists(eventId) then 
-     Right {
-       val event = eventRepository.findByMandatory(eventId)
-       event.addSection(input.name, input.description, input.totalSpots, input.totalSpotsReserved, input.priceInCents)
-       eventRepository.update(event)
-     }
-    else Left(DomainException(s"the event $eventId wasn't created"))
 
-    
+    //closure is only called if the future is completed successfully.
+//    partnerRepository.findById(partnerId).foreach { _ =>
+//      val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
+//      eventRepository.save(event)
+//    }
+
+
+//      for {
+//        partnerExists <- partnerRepository.exists(partnerId)
+//        if partnerExists
+//      } yield
+//        val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
+//        eventRepository.save(event)
+//
+
+
+
+  //Registering an onComplete callback on the future ensures that the corresponding closure
+  // is invoked after the future is completed, eventually.
+  def createSection(eventId: UUID,
+                    input: CreateEventSectionInput): Future[Either[Throwable, Unit]] = ???
+
 

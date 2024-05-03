@@ -3,7 +3,7 @@ package event.infra.repositories
 
 import event.domain.entities.Event
 import event.domain.repository.EventRepository
-import event.infra.db.{EventEntity, EventSectionEntity, EventSectionTable, EventSpotEntity, EventSpotTable, EventTable}
+import event.infra.db.*
 
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api.*
@@ -12,8 +12,8 @@ import slick.lifted.TableQuery
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.concurrent.*
-import scala.concurrent.duration.*
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.*
 import scala.language.postfixOps
 
 case class EventPhysicalRepository(db: Database) extends EventRepository:
@@ -25,7 +25,7 @@ case class EventPhysicalRepository(db: Database) extends EventRepository:
     val insert = eventTable += EventEntity(entity.id, entity.name, entity.description, entity.date, entity.totalSpots,
       entity.totalSpotsReserved, entity.isPublished, entity.partnerId, LocalDateTime.now())
 
-    db.run(insert)
+    db.run(insert.transactionally)
 
   override def update(entity: Event): Unit =
     val action = (for {
@@ -43,11 +43,8 @@ case class EventPhysicalRepository(db: Database) extends EventRepository:
     } yield ()).transactionally
 
     db.run(action)
-
-  override def findByMandatory(id: UUID): Event =
-    findById(id).head
-
-  override def findById(id: UUID): Option[Event] =
+    
+  override def findById(id: UUID): Future[Event] =
     val actionJoin = for {
       event <- eventTable.filter(_.id === id)
         .result
@@ -69,32 +66,42 @@ case class EventPhysicalRepository(db: Database) extends EventRepository:
       ).map(_.flatten)
 
       eventDomain = event.toDomain(sections, spots)
-    } yield Some(eventDomain)
+    } yield eventDomain
 
-    val result = db.run(actionJoin.transactionally)
+    db.run(actionJoin.transactionally)
 
-    Await.result(result, 1.second)
-
-  override def findAll(): List[Event] = ???
+  override def findAll(): Future[List[Event]] = ???
 
   override def delete(id: UUID): Unit = ???
 
-  override def findByPartnerId(partnerId: UUID): List[Event] =
-    val action = eventTable
-      .filter(_.partnerId === partnerId)
-      .result
+  override def findByPartnerId(partnerId: UUID): Future[List[Event]] =
+    val actionJoin = for {
+      events <- eventTable.filter(_.partnerId === partnerId)
+        .result
+        .map(_.map( e=> EventEntity(e.id, e.name, e.description, e.date, e.totalSpots, e.totalSpotsReserved,
+          e.isPublished, e.partnerId, e.updatedAt)))
 
-    Await.result(db.run(action), 2.second)
-      .map(e => e.toDomain(Seq.empty, Seq.empty))
-      .toList
+      sections <- DBIO.sequence(
+        events.map(event => 
+          sectionTable.filter(_.eventId === event.id)
+            .result
+            .map(_.map(es => EventSectionEntity(es.id, es.name, es.description, es.priceInCents, es.totalSpots,
+                       es.totalSpotsReserved, es.isPublished, event.id, es.updatedAt)))
+        )
+      ).map(_.flatten)
+      
 
-  override def exists(id: UUID): Boolean =
-    val action = db.run(eventTable.filter(_.id === id).exists.result.transactionally)
+      spots <- DBIO.sequence(
+        sections.map(section => {
+          spotTable.filter(_.eventSectionId === section.id).result.map(_.map(spot =>
+            EventSpotEntity(spot.id, spot.location, spot.isPublished, spot.isReserved, section.id, spot.updatedAt)))
+        })
+      ).map(_.flatten)
 
-    val futureResult = Future{
-      Await.result(action, 1.second)
-    }.recover{
-      case _: java.util.concurrent.TimeoutException => false
-    }
+      allEvents = events.map(_.toDomain(sections, spots)).toList
     
-    Await.result(futureResult, Duration.Inf)
+    } yield allEvents
+    
+    db.run(actionJoin)
+  
+  override def exists(id: UUID): Future[Boolean] = db.run(eventTable.filter(_.id === id).exists.result.transactionally)

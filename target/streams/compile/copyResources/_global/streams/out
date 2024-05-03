@@ -1,0 +1,3 @@
+[0m[[0m[0mdebug[0m] [0m[0mCopy resource mappings: [0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/andrelucas/IEFP/code-source/ddd-tickets-event/src/main/resources/logback.xml,/Users/andrelucas/IEFP/code-source/ddd-tickets-event/target/scala-3.4.1/classes/logback.xml)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/andrelucas/IEFP/code-source/ddd-tickets-event/src/main/resources/application.conf,/Users/andrelucas/IEFP/code-source/ddd-tickets-event/target/scala-3.4.1/classes/application.conf)[0m

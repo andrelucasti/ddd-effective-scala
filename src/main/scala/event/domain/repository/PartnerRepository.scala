@@ -5,5 +5,7 @@ import common.domain.Repository
 import event.domain.entities.Partner
 
 import java.util.UUID
+import scala.concurrent.Future
 
-trait PartnerRepository extends Repository[Partner, UUID]
+trait PartnerRepository extends Repository[Partner, UUID]:
+  def exists(id:UUID): Future[Boolean]

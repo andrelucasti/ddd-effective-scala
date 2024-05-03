@@ -1,0 +1,25 @@
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- Warning: /Users/andrelucas/IEFP/code-source/ddd-tickets-event/src/main/scala/event/infra/db/EventTable.scala:37:139 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m37 |[0m  [33moverride[0m [33mdef[0m * = (id, name, description, date, totalSpots, totalSpotsReserved, isPublished, partnerId, updatedAt) <> ((EventEntity.apply _).tupled, EventEntity.unapply)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m                                                                                                                         ^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThe syntax `<function> _` is no longer supported;[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0myou can simply leave out the trailing ` _`[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThis construct can be rewritten automatically under -rewrite -source 3.4-migration.[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- Warning: /Users/andrelucas/IEFP/code-source/ddd-tickets-event/src/main/scala/event/infra/db/EventTable.scala:70:152 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m70 |[0m  [33moverride[0m [33mdef[0m * = (id, name, description, priceInCents, totalSpots, totalSpotsReserved, isPublished, eventId, updatedAt) <> ((EventSectionEntity.apply _).tupled, EventSectionEntity.unapply)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThe syntax `<function> _` is no longer supported;[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0myou can simply leave out the trailing ` _`[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThis construct can be rewritten automatically under -rewrite -source 3.4-migration.[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- Warning: /Users/andrelucas/IEFP/code-source/ddd-tickets-event/src/main/scala/event/infra/db/EventTable.scala:89:113 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m89 |[0m  [33moverride[0m [33mdef[0m * = (id, location, isPublished, isReserved, eventSectionId, updatedAt) <> ((EventSpotEntity.apply _).tupled, EventSpotEntity.unapply)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThe syntax `<function> _` is no longer supported;[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0myou can simply leave out the trailing ` _`[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThis construct can be rewritten automatically under -rewrite -source 3.4-migration.[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- Warning: /Users/andrelucas/IEFP/code-source/ddd-tickets-event/src/main/scala/event/infra/db/PartnerTable.scala:15:55 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m15 |[0m  [33moverride[0m [33mdef[0m * = (id, name) <> ((PartnerEntity.apply _).tupled, PartnerEntity.unapply)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m                                   ^^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThe syntax `<function> _` is no longer supported;[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0myou can simply leave out the trailing ` _`[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mThis construct can be rewritten automatically under -rewrite -source 3.4-migration.[0m
+[0m[[0m[33mwarn[0m] [0m[0mfour warnings found[0m

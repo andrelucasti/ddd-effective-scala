@@ -5,7 +5,8 @@ import common.domain.Repository
 import event.domain.entities.{Event, Partner}
 
 import java.util.UUID
+import scala.concurrent.Future
 
 trait EventRepository extends Repository[Event, UUID]:
-  def findByPartnerId(id: UUID): List[Event]
-  def exists(id: UUID): Boolean
+  def findByPartnerId(id: UUID): Future[List[Event]]
+  def exists(id: UUID): Future[Boolean]
