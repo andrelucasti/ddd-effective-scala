@@ -21,7 +21,8 @@ case class EventSection(id: UUID,
   def isPublished: Boolean = this.pIsPublished
   
   @tailrec
-  final def initSpotRecursive(spotQuantity: Long, location: String): Unit =
+  final def initSpotRecursive(spotQuantity: Long, 
+                              location: String): Unit =
     if spotQuantity > 0 then
       val spot = EventSpot(UUID.randomUUID(), location + spotQuantity, false, false)
       this.spots += spot

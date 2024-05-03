@@ -8,3 +8,4 @@ import java.util.UUID
 
 trait EventRepository extends Repository[Event, UUID]:
   def findByPartnerId(id: UUID): List[Event]
+  def exists(id: UUID): Boolean

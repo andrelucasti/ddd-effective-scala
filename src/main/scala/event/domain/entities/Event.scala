@@ -29,7 +29,7 @@ case class Event(id: UUID,
                  priceInCents: Long): Unit =
 
     val section = EventSection.create(name, description, priceInCents, totalSpots, totalSpotsReserved)
-    section.initSpotRecursive(totalSpots, name.substring(0).toUpperCase)
+    section.initSpotRecursive(totalSpots, name.substring(0, 1).toUpperCase)
     sections += (section)
 
     addSpots(totalSpots)

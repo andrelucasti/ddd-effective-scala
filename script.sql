@@ -24,8 +24,9 @@ create table events (
 
 create table event_sections (
     id uuid primary key,
-    price_in_cents bigint not null,
+    name varchar(100),
     description varchar(200),
+    price_in_cents bigint not null,
     total_spots bigint not null,
     total_spots_reserved bigint not null,
     is_published boolean not null default false,
@@ -39,7 +40,7 @@ create table event_sections (
 
 create table event_spots (
     id uuid primary key,
-    location varchar(5) not null,
+    location varchar(10) not null,
     is_published boolean not null default false,
     is_reserved boolean not null default false,
     event_section_id uuid not null,

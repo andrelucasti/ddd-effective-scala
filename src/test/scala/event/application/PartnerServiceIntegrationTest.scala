@@ -1,7 +1,6 @@
 package io.andrelucas
 package event.application
 
-import common.domain.DomainException
 import common.domain.valueobjects.Name
 import event.domain.entities.Partner
 import event.domain.repository.PartnerRepository
@@ -11,7 +10,6 @@ import event.infra.repositories.PartnerPhysicalRepository
 import org.scalamock.scalatest.MockFactory
 import slick.lifted.TableQuery
 
-import java.time.LocalDateTime
 import java.util.UUID
 
 class PartnerServiceIntegrationTest extends IntegrationSpec with MockFactory {

@@ -17,6 +17,8 @@ libraryDependencies += "org.scalatest" %% "scalatest" % scalaTicVersion % "test"
 libraryDependencies += "org.scalamock" %% "scalamock" % "6.0.0" % "test"
 
 libraryDependencies += "com.typesafe.slick" %% "slick" % slickVersion
-libraryDependencies +=  "com.typesafe.slick" %% "slick-hikaricp" % slickVersion
+libraryDependencies += "com.typesafe.slick" %% "slick-hikaricp" % slickVersion
+
+libraryDependencies += "ch.qos.logback"  %  "logback-classic"  % "1.5.6"
 
 libraryDependencies += "org.postgresql" % "postgresql" % pgVersion

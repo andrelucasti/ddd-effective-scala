@@ -23,6 +23,8 @@ case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
     db.run(insert)
   }
 
+  override def update(entity: Partner): Unit = ???
+
   override def findById(id: UUID): Option[Partner] =
     val action = partnerTable.filter(_.id === id)
       .result
@@ -35,6 +37,8 @@ case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
     }.recoverWith{
       case _: java.util.concurrent.TimeoutException => Future.successful(None)
     }, 1.second)
+
+  override def findByMandatory(id: UUID): Partner = findById(id).head
 
   override def findAll(): List[Partner] =
     val action = partnerTable.result
