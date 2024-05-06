@@ -2,7 +2,8 @@ package io.andrelucas
 package event.domain.repository
 
 import common.domain.Repository
-import event.domain.entities.{Event, Partner}
+import event.domain.entities.Event
+import io.andrelucas.partner.domain.Partner
 
 import java.util.UUID
 import scala.concurrent.Future

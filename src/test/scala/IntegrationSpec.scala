@@ -9,6 +9,7 @@ import slick.jdbc.PostgresProfile.api.*
 
 abstract class IntegrationSpec extends AsyncFlatSpecLike
   with BeforeAndAfter
+  with BeforeAndAfterAll
   with OptionValues
   with Inside
   with Inspectors
@@ -18,7 +19,6 @@ abstract class IntegrationSpec extends AsyncFlatSpecLike
   {
 
   val db = Database.forConfig("ddd")
-  
   before {
     db.run(
       DBIO.seq(

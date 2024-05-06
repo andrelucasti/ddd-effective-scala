@@ -1,5 +1,5 @@
 package io.andrelucas
 package common.domain
 
-trait EventPublisher():
+trait DomainEventPublisher():
   def publish(domainEvent: DomainEvent): Unit

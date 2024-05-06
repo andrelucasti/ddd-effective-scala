@@ -2,21 +2,25 @@ package io.andrelucas
 package event.application
 
 import common.application.ApplicationService
-import common.domain.{DomainEventManager, DomainException}
-import common.infra.DomainEventPublisher
+import common.domain.{DomainEvent, DomainEventManager, DomainException}
+import event.domain.domainevents.EventPublisher
 import event.domain.entities.Event
-import event.domain.repository.{EventRepository, PartnerRepository}
+import event.domain.repository.EventRepository
+import io.andrelucas.partner.domain.repository.PartnerRepository
 
 import java.util.UUID
+import java.util.concurrent.LinkedTransferQueue
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
 
 case class EventService(private val eventRepository: EventRepository, 
-                        private val partnerRepository: PartnerRepository) 
+                        private val partnerRepository: PartnerRepository,
+                        private val channel: LinkedTransferQueue[DomainEvent]) 
+  
   extends ApplicationService(
     DomainEventManager(
-      DomainEventPublisher()
+      EventPublisher(channel)
   )
 ):
   

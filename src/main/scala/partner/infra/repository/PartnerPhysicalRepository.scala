@@ -1,10 +1,10 @@
 package io.andrelucas
-package event.infra.repositories
+package partner.infra.repository
 
 import common.domain.valueobjects.Name
-import event.domain.entities.Partner
-import event.domain.repository.PartnerRepository
 import event.infra.db.{PartnerEntity, PartnerTable}
+import partner.domain.Partner
+import partner.domain.repository.PartnerRepository
 
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api.*

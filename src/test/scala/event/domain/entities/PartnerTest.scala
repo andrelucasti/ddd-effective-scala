@@ -2,6 +2,7 @@ package io.andrelucas
 package event.domain.entities
 
 import io.andrelucas.common.domain.valueobjects.Name
+import io.andrelucas.partner.domain.Partner
 import org.scalatest.matchers.must.Matchers.not
 
 import java.time.LocalDateTime

@@ -1,21 +1,26 @@
 package io.andrelucas
 package event.application
 
-import common.domain.DomainException
+import common.domain.{DomainEvent, DomainException}
 import common.domain.valueobjects.Name
-import event.domain.entities.{Event, Partner}
-import event.domain.repository.{EventRepository, PartnerRepository}
-import event.infra.repositories.{EventPhysicalRepository, PartnerPhysicalRepository}
+import event.domain.entities.Event
+import event.domain.repository.EventRepository
+import event.infra.repositories.EventPhysicalRepository
+import io.andrelucas.partner.domain.Partner
+import io.andrelucas.partner.domain.repository.PartnerRepository
+import io.andrelucas.partner.infra.repository.PartnerPhysicalRepository
 
 import java.time.LocalDateTime
 import java.util.UUID
+import java.util.concurrent.LinkedTransferQueue
 import scala.collection.mutable
 
 class EventServiceIntegrationTest extends IntegrationSpec {
   private val eventRepository: EventRepository = EventPhysicalRepository(db)
   private val partnerRepository: PartnerRepository = PartnerPhysicalRepository(db)
-  
-  private val eventService = EventService(eventRepository, partnerRepository)
+
+  private val channel = LinkedTransferQueue[DomainEvent]()
+  private val eventService = EventService(eventRepository, partnerRepository, channel)
 
   it should "return exception when is trying create a partner's a event without it is registered" in {
     val id = UUID.randomUUID()
