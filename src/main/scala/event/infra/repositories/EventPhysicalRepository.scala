@@ -21,13 +21,17 @@ case class EventPhysicalRepository(db: Database) extends EventRepository:
   private val sectionTable = TableQuery[EventSectionTable]
   private val spotTable = TableQuery[EventSpotTable]
 
-  override def save(entity: Event): Unit =
-    val insert = eventTable += EventEntity(entity.id, entity.name, entity.description, entity.date, entity.totalSpots,
-      entity.totalSpotsReserved, entity.isPublished, entity.partnerId, LocalDateTime.now())
+  override def save(entity: Event): Future[Unit] =
 
-    db.run(insert.transactionally)
+    val insert = (for {
+      _ <- eventTable += EventEntity(entity.id, entity.name, entity.description, entity.date,
+        entity.totalSpots, entity.totalSpotsReserved, entity.isPublished, entity.partnerId, LocalDateTime.now())
 
-  override def update(entity: Event): Unit =
+    } yield ()).transactionally
+
+    db.run(insert)
+
+  override def update(entity: Event): Future[Unit] =
     val action = (for {
 
       _ <- eventTable.filter(_.id === entity.id)

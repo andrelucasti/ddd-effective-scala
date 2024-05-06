@@ -3,6 +3,8 @@ package event.domain.entities
 
 import common.domain.AggregateRoot
 
+import io.andrelucas.event.domain.domainevents.{EventCreated, EventUpdated}
+
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.collection.mutable
@@ -33,6 +35,24 @@ case class Event(id: UUID,
     sections += (section)
 
     addSpots(totalSpots)
+    
+    this.addEvent(EventUpdated(this.id))
+
+  def addSection2(name: String,
+                 description: String,
+                 totalSpots: Long,
+                 totalSpotsReserved: Long,
+                 priceInCents: Long): Event =
+
+    val section = EventSection.create(name, description, priceInCents, totalSpots, totalSpotsReserved)
+    section.initSpotRecursive(totalSpots, name.substring(0, 1).toUpperCase)
+    sections += (section)
+
+    addSpots(totalSpots)
+
+    this.addEvent(EventUpdated(this.id))
+    
+    this
   
   def publish(): Unit =
     this.pIsPublished = true
@@ -47,4 +67,7 @@ case class Event(id: UUID,
 
 object Event:
   def create(name: String, description: String, date: LocalDateTime, partnerId: UUID): Event =
-    Event(UUID.randomUUID(), name, description, date, 0, 0, false, partnerId, mutable.Set.empty)
+    val newEvent = Event(UUID.randomUUID(), name, description, date, 0, 0, false, partnerId, mutable.Set.empty)
+    newEvent.addEvent(EventCreated(newEvent.id))
+    
+    newEvent

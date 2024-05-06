@@ -1,6 +1,8 @@
 package io.andrelucas
 package event.domain.entities
 
+import io.andrelucas.event.domain.domainevents.{EventCreated, EventUpdated}
+
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.collection.mutable
@@ -16,6 +18,19 @@ class EventTest extends UnitSpec {
     val eventExpected = Event(eventName.id, "EventName", "eventDescription", date, 0, 0, false, partnerId, mutable.Set.empty)
 
     eventName should be (eventExpected)
+  }
+
+  it should "register a domain event when a event is created" in {
+    val date = LocalDateTime.of(2024, 2, 2, 12, 0, 0)
+    val partnerId = UUID.randomUUID()
+    val sections = List.empty
+    val event = Event.create("EventName", "eventDescription", date, partnerId)
+
+    val eventExpected = Event(event.id, "EventName", "eventDescription", date, 0, 0, false, partnerId, mutable.Set.empty)
+
+    event should be(eventExpected)
+    event.events().size should be (1)
+    event.events().head should be (EventCreated(event.id))
   }
 
   it should "sum total spots when a section is created" in {
@@ -52,6 +67,22 @@ class EventTest extends UnitSpec {
     vipSection.priceInCents should be (1500)
     eventName.totalSpots should be (100)
     eventName.totalSpotsReserved should be (0)
+  }
+
+  it should "register events created and updated when a section is added" in {
+    val date = LocalDateTime.of(2024, 2, 2, 12, 0, 0)
+    val partnerId = UUID.randomUUID()
+    val sections = List.empty
+    val event = Event.create("EventName", "eventDescription", date, partnerId)
+
+    val eventExpected = Event(event.id, "EventName", "eventDescription", date, 0, 0, false, partnerId, mutable.Set.empty)
+    val spots = 100
+    val price = 1500
+
+    event.addSection("VIP", "section VIP for EventName", spots, 0, price)
+
+    event.events() should contain(EventCreated(event.id))
+    event.events() should contain(EventUpdated(event.id))
   }
 
   it should "publish a section when an event is published" in {

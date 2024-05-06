@@ -7,45 +7,35 @@ import event.domain.entities.{Event, Partner}
 import event.domain.repository.{EventRepository, PartnerRepository}
 import event.infra.repositories.{EventPhysicalRepository, PartnerPhysicalRepository}
 
-import org.scalatest.concurrent.Eventually.eventually
-
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.collection.mutable
-import scala.concurrent.Await
-import org.scalatest.concurrent.ScalaFutures.*
-
-import scala.concurrent.duration.*
-import org.scalatest.time.SpanSugar.*
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class EventServiceIntegrationTest extends IntegrationSpec {
-
   private val eventRepository: EventRepository = EventPhysicalRepository(db)
   private val partnerRepository: PartnerRepository = PartnerPhysicalRepository(db)
   
-  private val subject = EventService(eventRepository, partnerRepository)
+  private val eventService = EventService(eventRepository, partnerRepository)
 
   it should "return exception when is trying create a partner's a event without it is registered" in {
     val id = UUID.randomUUID()
     val partner = Partner(id, Name("Andre Lucas"))
     val input = CreateEventInput("Knot Fest", "Knot Fest", LocalDateTime.of(2024, 11, 9, 20, 0, 0))
-    val either = subject.create(id, input)
+    val either = eventService.create(id, input)
 
-    either map { e => e.left.e should be(Left(DomainException(s"the partner $id not exists yet"))) }
+    either map { e => e.toEither.left.e should be(Left(DomainException(s"the partner $id not exists yet"))) }
   }
 
   it should "create a event when partner is registered" in {
     val id = UUID.randomUUID()
     val partner = Partner(id, Name("Andre Lucas"))
-    partnerRepository.save(partner)
 
     val eventDate = LocalDateTime.of(2024, 11, 9, 20, 0, 0)
     val input = CreateEventInput("Knot Fest", "Knot Fest", eventDate)
 
     for
-      e <- subject.create(id, input)
+      _ <- partnerRepository.save(partner)
+      e <- eventService.create(id, input)
       events <- eventRepository.findByPartnerId(id)
       event = events.last
     yield
@@ -57,35 +47,31 @@ class EventServiceIntegrationTest extends IntegrationSpec {
     val eventId = UUID.randomUUID()
     val input = CreateEventSectionInput("VIP", "Knot Fest - VIP Section", 10000, 100, 0)
 
-    subject.createSection(eventId, input) map { e =>
-      e.left.e should be(Left(DomainException(s"the event $eventId wasn't created yet")))
+    eventService.createSection(eventId, input) map { e =>
+      e.toEither.left.e should be(Left(DomainException(s"the event $eventId wasn't created yet")))
     }
   }
 
-  it should "create a section when a event have been created" in {
-    val id = UUID.randomUUID()
-    val partner = Partner(id, Name("Andre Lucas"))
-    partnerRepository.save(partner)
+  it should "create a event section when a event is registered" in {
+    val partnerId = UUID.randomUUID()
+    val partner = Partner(partnerId, Name("Andre Lucas"))
 
     val eventDate = LocalDateTime.of(2024, 11, 9, 20, 0, 0)
-    val createEventFuture = subject.create(id, CreateEventInput("Knot Fest", "Knot Fest", eventDate))
+    val eventId = UUID.randomUUID()
+    val event = Event(eventId, "Rock in Rio", "Bla", eventDate, 0, 0, false, partnerId, mutable.Set.empty)
 
-    whenReady(createEventFuture) { _ =>
-      val events = Await.result(eventRepository.findAll(), Duration.Inf)
-      val eventSectionInput = CreateEventSectionInput("VIP", "Knot Fest Vip Area", 10000, 20, 0)
-      val eventSectionFuture = subject.createSection(events.last.id, eventSectionInput)
-
-      eventually {
-        whenReady(eventSectionFuture) { _=>
-          val eventOptional = Await.result(eventRepository.findById(events.last.id), Duration.Inf)
-
-          val event = eventOptional.head
-          eventOptional should not be empty
-          event.partnerId should be(partner.id)
-          event.totalSpots should be(20)
-          event.totalSpotsReserved should be(0)
-        }
-      }
-    }
+    val eventSectionInput = CreateEventSectionInput("VIP", "Vip RR", 10000, 3, 0)
+    for
+      _ <- partnerRepository.save(partner)
+      _ <- eventRepository.save(event)
+      _ <- eventService.createSection(eventId, eventSectionInput)
+      _ <- eventRepository.findById(eventId) // I don't know why I'm needing forcing here....
+    yield
+      val eventUpdated = eventRepository.findById(eventId).futureValue
+      eventUpdated.get.id should be (eventId)
+      eventUpdated.get.partnerId should be(partnerId)
+      eventUpdated.get.totalSpots should be(3)
+      eventUpdated.get.totalSpotsReserved should be(0)
+      eventUpdated.get.sections.size should be(1)
   }
 }

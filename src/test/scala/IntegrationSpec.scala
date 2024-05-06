@@ -1,22 +1,24 @@
 package io.andrelucas
 
-import org.scalatest.{BeforeAndAfter, Inside, Inspectors, OptionValues, Suite}
-import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.flatspec.AsyncFlatSpecLike
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.*
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api.*
 
-abstract class IntegrationSpec extends AsyncFlatSpec
+abstract class IntegrationSpec extends AsyncFlatSpecLike
   with BeforeAndAfter
   with OptionValues
   with Inside
   with Inspectors
   with Suite
   with Matchers
+  with ScalaFutures
   {
 
   val db = Database.forConfig("ddd")
-
+  
   before {
     db.run(
       DBIO.seq(
@@ -25,6 +27,6 @@ abstract class IntegrationSpec extends AsyncFlatSpec
         sqlu"""DELETE FROM events""",
         sqlu"""DELETE FROM partners""",
       )
-    )
+    )  
   }
 }

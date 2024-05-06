@@ -6,6 +6,7 @@
 [0m[[0m[0mdebug[0m] [0m[0mWe backup class files:[0m
 [0m[[0m[0mdebug[0m] [0m[0mRegistering generated classes:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	IntegrationSpec.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	AsyncTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	EventTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	PartnerTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	EventServiceIntegrationTest.class[0m
@@ -15,6 +16,7 @@
 [0m[[0m[0mdebug[0m] [0m[0m	PartnerServiceIntegrationTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	EmailTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	IntegrationSpec.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	AsyncTest.tasty[0m
 [0m[[0m[0mdebug[0m] [0m[0m	EventTest.tasty[0m
 [0m[[0m[0mdebug[0m] [0m[0m	PartnerTest.tasty[0m
 [0m[[0m[0mdebug[0m] [0m[0m	EventServiceIntegrationTest.tasty[0m

@@ -26,6 +26,8 @@ libraryDependencies += "com.typesafe.slick" %% "slick-testkit" % slickVersion
 
 //Monitoring
 libraryDependencies += "ch.qos.logback"  %  "logback-classic"  % "1.5.6"
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
+
 libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M7" % Test
 
 Test / parallelExecution := false

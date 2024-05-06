@@ -1,7 +1,8 @@
 #Successful Tests
-#Fri May 03 11:01:26 WEST 2024
-io.andrelucas.common.domain.valueobjects.EmailTest=1714730485783
-io.andrelucas.event.application.PartnerServiceIntegrationTest=1714730486155
-io.andrelucas.event.domain.entities.CustomerSpecTest=1714730485783
-io.andrelucas.event.domain.entities.EventTest=1714730485808
-io.andrelucas.event.domain.entities.PartnerTest=1714730485784
+#Fri May 03 20:20:18 WEST 2024
+io.andrelucas.common.domain.valueobjects.EmailTest=1714764016731
+io.andrelucas.event.application.AsyncTest=1714764018049
+io.andrelucas.event.application.PartnerServiceIntegrationTest=1714764016725
+io.andrelucas.event.domain.entities.CustomerSpecTest=1714764018164
+io.andrelucas.event.domain.entities.EventTest=1714764016510
+io.andrelucas.event.domain.entities.PartnerTest=1714764016536

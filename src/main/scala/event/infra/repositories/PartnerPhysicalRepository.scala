@@ -17,10 +17,13 @@ import scala.concurrent.Future
 case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
   private val partnerTable = TableQuery[PartnerTable]
 
-  override def save(entity: Partner): Unit = {
-    val insert = partnerTable += (PartnerEntity(entity.id, entity.name))
+  override def save(entity: Partner): Future[Unit] =
+    val insert = (for {
+      _ <- partnerTable += PartnerEntity(entity.id, entity.name)
+  
+    } yield ()).transactionally
+
     db.run(insert)
-  }
 
   override def findById(id: UUID): Future[Option[Partner]] =
     val action = partnerTable.filter(_.id === id)
@@ -41,7 +44,7 @@ case class PartnerPhysicalRepository(db: Database) extends PartnerRepository {
   override def exists(id: UUID): Future[Boolean] =
     db.run(partnerTable.filter(_.id === id).exists.result)
 
-  override def update(entity: Partner): Unit = ???
+  override def update(entity: Partner): Future[Unit] = ???
 
   override def delete(id: UUID): Unit = ???
 }
