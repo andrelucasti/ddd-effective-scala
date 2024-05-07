@@ -1,27 +1,22 @@
 package io.andrelucas
 package event.application
 
-import common.domain.valueobjects.Name
+import common.domain.DomainEvent
 import event.infra.db.PartnerTable
+import partner.application.PartnerService
+import partner.domain.domainevents.{PartnerCreated}
+import partner.domain.repository.PartnerRepository
+import partner.infra.repository.PartnerPhysicalRepository
 
-import io.andrelucas.common.domain.DomainEvent
-import io.andrelucas.partner.application.PartnerService
-import io.andrelucas.partner.domain.Partner
-import io.andrelucas.partner.domain.domainevents.PartnerEventPublisher
-import io.andrelucas.partner.domain.repository.PartnerRepository
-import io.andrelucas.partner.infra.repository.PartnerPhysicalRepository
 import slick.lifted.TableQuery
 
-import java.util.UUID
 import java.util.concurrent.LinkedTransferQueue
 
 class PartnerServiceIntegrationTest extends IntegrationSpec {
   private val partnerTable = TableQuery[PartnerTable]
-  private val channel = LinkedTransferQueue[DomainEvent]()
+  private val channel = LinkedTransferQueue[PartnerCreated]()
   private val repository: PartnerRepository = PartnerPhysicalRepository(db)
-  private val partnerEventPublisher = PartnerEventPublisher(channel)
-  private val partnerService = PartnerService(repository, partnerEventPublisher)
-  
+  private val partnerService = PartnerService(repository)
 
   it should "create a partner" in {
    
@@ -29,6 +24,6 @@ class PartnerServiceIntegrationTest extends IntegrationSpec {
     partnerService.register(partnerInput)
     val partnerCreated = repository.findAll().futureValue
 
-    partnerCreated should have length(1)
+    partnerCreated should have length 1
   }
 }

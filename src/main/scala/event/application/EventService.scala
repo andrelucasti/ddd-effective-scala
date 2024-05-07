@@ -2,27 +2,19 @@ package io.andrelucas
 package event.application
 
 import common.application.ApplicationService
-import common.domain.{DomainEvent, DomainEventManager, DomainException}
-import event.domain.domainevents.EventPublisher
+import common.domain.{DomainException, DomainPublisher}
 import event.domain.entities.Event
 import event.domain.repository.EventRepository
-import io.andrelucas.partner.domain.repository.PartnerRepository
+import partner.domain.repository.PartnerRepository
 
 import java.util.UUID
-import java.util.concurrent.LinkedTransferQueue
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
 
 case class EventService(private val eventRepository: EventRepository, 
                         private val partnerRepository: PartnerRepository,
-                        private val channel: LinkedTransferQueue[DomainEvent]) 
-  
-  extends ApplicationService(
-    DomainEventManager(
-      EventPublisher(channel)
-  )
-):
+                        private val domainPublisher: DomainPublisher) extends ApplicationService(domainPublisher):
   
   def create(partnerId: UUID,
              input: CreateEventInput): Future[Try[Unit]] =
@@ -34,29 +26,12 @@ case class EventService(private val eventRepository: EventRepository,
         val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
         for
           _ <- eventRepository.save(event)
-        yield
-          finish(event)
+        yield 
+          publishEvent(event)
 
       else throw DomainException(s"the partner $partnerId not exists yet")
     }
   }
-
-
-    //closure is only called if the future is completed successfully.
-//    partnerRepository.findById(partnerId).foreach { _ =>
-//      val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
-//      eventRepository.save(event)
-//    }
-
-
-//      for {
-//        partnerExists <- partnerRepository.exists(partnerId)
-//        if partnerExists
-//      } yield
-//        val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
-//        eventRepository.save(event)
-//
-
 
 
   //Registering an onComplete callback on the future ensures that the corresponding closure
@@ -71,6 +46,6 @@ case class EventService(private val eventRepository: EventRepository,
           case Some(event) =>
             event.addSection(input.name, input.description, input.totalSpots, input.totalSpotsReserved, input.priceInCents)
             eventRepository.update(event)
-            finish(event)
+            publishEvent(event)
       }
     }

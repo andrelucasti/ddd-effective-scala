@@ -17,6 +17,7 @@ libraryDependencies += "org.scalactic" %% "scalactic" % scalaTicVersion
 libraryDependencies += "org.scalatest" %% "scalatest" % scalaTicVersion % Test
 libraryDependencies += "org.scalamock" %% "scalamock" % "6.0.0" % "test"
 libraryDependencies +=  "com.github.sbt" % "junit-interface" % "0.13.3" % Test
+libraryDependencies += "com.softwaremill.ox" %% "core" % "0.1.0"
 
 //DB
 libraryDependencies += "com.typesafe.slick" %% "slick" % slickVersion

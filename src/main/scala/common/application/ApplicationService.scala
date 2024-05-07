@@ -1,10 +1,9 @@
 package io.andrelucas
 package common.application
 
-import io.andrelucas.common.domain.{AggregateRoot, DomainEventManager}
+import common.domain.{AggregateRoot, DomainPublisher}
 
-abstract class ApplicationService(domainEventPublisher: DomainEventManager):
-  def finish(aggregateRoot: AggregateRoot): Unit = {
-    domainEventPublisher.publish(aggregateRoot)
+trait ApplicationService(domainPublisher: DomainPublisher):
+  def publishEvent(aggregateRoot: AggregateRoot):Unit =
+    aggregateRoot.events().foreach(domainPublisher.publish)
     aggregateRoot.clearEvents()
-  }

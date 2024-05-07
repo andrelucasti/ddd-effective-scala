@@ -1,26 +1,31 @@
 package io.andrelucas
 package event.application
 
-import common.domain.{DomainEvent, DomainException}
 import common.domain.valueobjects.Name
+import common.domain.{DomainEvent, DomainEventManager, DomainException, DomainPublisher}
 import event.domain.entities.Event
 import event.domain.repository.EventRepository
 import event.infra.repositories.EventPhysicalRepository
-import io.andrelucas.partner.domain.Partner
-import io.andrelucas.partner.domain.repository.PartnerRepository
-import io.andrelucas.partner.infra.repository.PartnerPhysicalRepository
+import partner.domain.Partner
+import partner.domain.repository.PartnerRepository
+import partner.infra.repository.PartnerPhysicalRepository
+
+import io.andrelucas.event.domain.domainevents.EventCreated
+import io.andrelucas.event.infra.EventPublisher
+import ox.channels.Channel
 
 import java.time.LocalDateTime
 import java.util.UUID
-import java.util.concurrent.LinkedTransferQueue
 import scala.collection.mutable
+import scala.concurrent.Future
 
 class EventServiceIntegrationTest extends IntegrationSpec {
   private val eventRepository: EventRepository = EventPhysicalRepository(db)
   private val partnerRepository: PartnerRepository = PartnerPhysicalRepository(db)
 
-  private val channel = LinkedTransferQueue[DomainEvent]()
-  private val eventService = EventService(eventRepository, partnerRepository, channel)
+  private val channelEventCreated: Channel[EventCreated] = Channel.withCapacity(10)
+  private val eventPublisher = EventPublisher(channelEventCreated)
+  private val eventService = EventService(eventRepository, partnerRepository, eventPublisher)
 
   it should "return exception when is trying create a partner's a event without it is registered" in {
     val id = UUID.randomUUID()
@@ -46,6 +51,7 @@ class EventServiceIntegrationTest extends IntegrationSpec {
     yield
       events should have length 1
       events should contain(Event(event.id, "Knot Fest", "Knot Fest", eventDate, 0, 0, false, id, mutable.Set.empty))
+
   }
 
   it should "create return a exception when try creating a section without its event not exists" in {
@@ -66,6 +72,7 @@ class EventServiceIntegrationTest extends IntegrationSpec {
     val event = Event(eventId, "Rock in Rio", "Bla", eventDate, 0, 0, false, partnerId, mutable.Set.empty)
 
     val eventSectionInput = CreateEventSectionInput("VIP", "Vip RR", 10000, 3, 0)
+
     for
       _ <- partnerRepository.save(partner)
       _ <- eventRepository.save(event)

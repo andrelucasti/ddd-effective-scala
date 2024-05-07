@@ -37,22 +37,6 @@ case class Event(id: UUID,
     addSpots(totalSpots)
     
     this.addEvent(EventUpdated(this.id))
-
-  def addSection2(name: String,
-                 description: String,
-                 totalSpots: Long,
-                 totalSpotsReserved: Long,
-                 priceInCents: Long): Event =
-
-    val section = EventSection.create(name, description, priceInCents, totalSpots, totalSpotsReserved)
-    section.initSpotRecursive(totalSpots, name.substring(0, 1).toUpperCase)
-    sections += (section)
-
-    addSpots(totalSpots)
-
-    this.addEvent(EventUpdated(this.id))
-    
-    this
   
   def publish(): Unit =
     this.pIsPublished = true
