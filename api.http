@@ -1,0 +1,7 @@
+###
+POST http://localhost:8080/partners
+Content-Type: application/json
+
+{
+    "name": "Partner 1"
+}

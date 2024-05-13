@@ -22,7 +22,7 @@ class PartnerServiceIntegrationTest extends IntegrationSpec {
    
     val partnerInput = PartnerInput("Andre Lucas Input")
     partnerService.register(partnerInput)
-    val partnerCreated = repository.findAll().futureValue
+    val partnerCreated = repository.findAll.futureValue
 
     partnerCreated should have length 1
   }

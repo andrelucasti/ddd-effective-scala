@@ -1,17 +1,17 @@
 package io.andrelucas
 package event.application
 
+import common.domain.DomainException
 import common.domain.valueobjects.Name
-import common.domain.{DomainEvent, DomainEventManager, DomainException, DomainPublisher}
+import event.domain.domainevents.EventCreated
 import event.domain.entities.Event
 import event.domain.repository.EventRepository
+import event.infra.EventPublisher
 import event.infra.repositories.EventPhysicalRepository
 import partner.domain.Partner
 import partner.domain.repository.PartnerRepository
 import partner.infra.repository.PartnerPhysicalRepository
 
-import io.andrelucas.event.domain.domainevents.EventCreated
-import io.andrelucas.event.infra.EventPublisher
 import ox.channels.Channel
 
 import java.time.LocalDateTime
