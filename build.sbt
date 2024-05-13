@@ -12,24 +12,34 @@ lazy val slickVersion = "3.5.1"
 lazy val scalaTicVersion = "3.2.18"
 lazy val pgVersion = "42.7.3"
 
-//Core
-libraryDependencies += "org.scalactic" %% "scalactic" % scalaTicVersion
-libraryDependencies += "com.softwaremill.ox" %% "core" % "0.1.0"
-libraryDependencies += "io.javalin" % "javalin" % "6.1.3"
-libraryDependencies += "io.javalin" % "javalin-bundle" % "6.1.3"
-libraryDependencies += "com.google.code.gson" % "gson" % "2.10.1"
-
-libraryDependencies ++= Seq(
+lazy val zio = Seq(
   "dev.zio"       %% "zio"            % "2.0.22",
   "dev.zio"       %% "zio-json"       % "0.6.2",
   "dev.zio"       %% "zio-http"       % "3.0.0-RC6",
 )
 
+lazy val javalin = Seq(
+  "io.javalin" % "javalin" % "6.1.4",
+  "io.javalin" % "javalin-bundle" % "6.1.3"
+)
+
+lazy val slick = Seq(
+  "com.typesafe.slick" %% "slick" % slickVersion,
+  "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
+  "com.typesafe.slick" %% "slick-testkit" % slickVersion
+)
+
+//Core
+libraryDependencies += "org.scalactic" %% "scalactic" % scalaTicVersion
+libraryDependencies += "com.softwaremill.ox" %% "core" % "0.1.0"
+libraryDependencies += "com.google.code.gson" % "gson" % "2.10.1"
+
+libraryDependencies ++= javalin
+libraryDependencies ++= zio
+
 //DB
-libraryDependencies += "com.typesafe.slick" %% "slick" % slickVersion
-libraryDependencies += "com.typesafe.slick" %% "slick-hikaricp" % slickVersion
+libraryDependencies ++= slick
 libraryDependencies += "org.postgresql" % "postgresql" % pgVersion
-libraryDependencies += "com.typesafe.slick" %% "slick-testkit" % slickVersion
 
 //Monitoring
 libraryDependencies += "ch.qos.logback"  %  "logback-classic"  % "1.5.6"
