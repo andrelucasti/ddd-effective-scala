@@ -1,7 +1,6 @@
 package io.andrelucas
 package partner.application
 
-import event.application.PartnerInput
 import partner.domain.Partner
 import partner.domain.repository.PartnerRepository
 

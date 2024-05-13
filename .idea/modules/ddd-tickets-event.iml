@@ -8,8 +8,6 @@
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/scala" isTestSource="false" packagePrefix="io.andrelucas" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/scala" isTestSource="true" packagePrefix="io.andrelucas" />
-      <excludeFolder url="file://$MODULE_DIR$/../dataSources" />
-      <excludeFolder url="file://$MODULE_DIR$/../httpRequests" />
       <excludeFolder url="file://$MODULE_DIR$/../../target" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -1,8 +1,8 @@
 package io.andrelucas
 package event.application
 
-import common.application.ApplicationService
-import common.domain.{DomainException, DomainPublisher}
+import common.domain.DomainException
+import event.application.inputs.CreateEventInput
 import event.domain.entities.Event
 import event.domain.repository.EventRepository
 import partner.domain.repository.PartnerRepository
@@ -13,8 +13,7 @@ import scala.concurrent.Future
 import scala.util.Try
 
 case class EventService(private val eventRepository: EventRepository, 
-                        private val partnerRepository: PartnerRepository,
-                        private val domainPublisher: DomainPublisher) extends ApplicationService(domainPublisher):
+                        private val partnerRepository: PartnerRepository):
   
   def create(partnerId: UUID,
              input: CreateEventInput): Future[Try[Unit]] =
@@ -26,9 +25,8 @@ case class EventService(private val eventRepository: EventRepository,
         val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
         for
           _ <- eventRepository.save(event)
-        yield 
-          publishEvent(event)
-
+        yield() 
+         
       else throw DomainException(s"the partner $partnerId not exists yet")
     }
   }
@@ -46,6 +44,5 @@ case class EventService(private val eventRepository: EventRepository,
           case Some(event) =>
             event.addSection(input.name, input.description, input.totalSpots, input.totalSpotsReserved, input.priceInCents)
             eventRepository.update(event)
-            publishEvent(event)
       }
     }
