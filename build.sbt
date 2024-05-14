@@ -11,6 +11,7 @@ lazy val root = (project in file("."))
 lazy val slickVersion = "3.5.1"
 lazy val scalaTicVersion = "3.2.18"
 lazy val pgVersion = "42.7.3"
+val pekkoVersion = "1.0.2"
 
 lazy val zio = Seq(
   "dev.zio"       %% "zio"            % "2.0.22",
@@ -29,13 +30,19 @@ lazy val slick = Seq(
   "com.typesafe.slick" %% "slick-testkit" % slickVersion
 )
 
+
+lazy val pekko = Seq(
+  "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
+  "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test
+)
+
 //Core
 libraryDependencies += "org.scalactic" %% "scalactic" % scalaTicVersion
-libraryDependencies += "com.softwaremill.ox" %% "core" % "0.1.0"
 libraryDependencies += "com.google.code.gson" % "gson" % "2.10.1"
 
 libraryDependencies ++= javalin
 libraryDependencies ++= zio
+libraryDependencies ++= pekko
 
 //DB
 libraryDependencies ++= slick

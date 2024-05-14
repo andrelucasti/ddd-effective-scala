@@ -25,7 +25,7 @@ case class EventService(private val eventRepository: EventRepository,
         val event = Event.create(input.eventName, input.eventDescription, input.date, partnerId)
         for
           _ <- eventRepository.save(event)
-        yield() 
+        yield ()
          
       else throw DomainException(s"the partner $partnerId not exists yet")
     }

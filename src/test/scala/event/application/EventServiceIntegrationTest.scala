@@ -12,7 +12,7 @@ import partner.domain.Partner
 import partner.domain.repository.PartnerRepository
 import partner.infra.repository.PartnerPhysicalRepository
 
-import ox.channels.Channel
+import io.andrelucas.event.application.inputs.CreateEventInput
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -23,9 +23,8 @@ class EventServiceIntegrationTest extends IntegrationSpec {
   private val eventRepository: EventRepository = EventPhysicalRepository(db)
   private val partnerRepository: PartnerRepository = PartnerPhysicalRepository(db)
 
-  private val channelEventCreated: Channel[EventCreated] = Channel.withCapacity(10)
-  private val eventPublisher = EventPublisher(channelEventCreated)
-  private val eventService = EventService(eventRepository, partnerRepository, eventPublisher)
+  private val eventPublisher = EventPublisher()
+  private val eventService = EventService(eventRepository, partnerRepository)
 
   it should "return exception when is trying create a partner's a event without it is registered" in {
     val id = UUID.randomUUID()

@@ -21,7 +21,7 @@ case class Partner(id: UUID,
   override def toJSON: Any = ""
 
 object Partner:
-  def create(name: String):Partner =
+  def create(name: String): Partner =
     val partner = Partner(UUID.randomUUID(), Name(name))
     partner.addEvent(PartnerCreated(partner.id))
     

@@ -1,10 +1,9 @@
 package io.andrelucas
 package event.application
 
-import common.domain.DomainEvent
 import event.infra.db.PartnerTable
 import partner.application.PartnerService
-import partner.domain.domainevents.{PartnerCreated}
+import partner.domain.domainevents.PartnerCreated
 import partner.domain.repository.PartnerRepository
 import partner.infra.repository.PartnerPhysicalRepository
 
@@ -22,7 +21,7 @@ class PartnerServiceIntegrationTest extends IntegrationSpec {
    
     val partnerInput = PartnerInput("Andre Lucas Input")
     partnerService.register(partnerInput)
-    val partnerCreated = repository.findAll.futureValue
+    val partnerCreated = repository.findAll().futureValue
 
     partnerCreated should have length 1
   }
